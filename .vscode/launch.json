@@ -9,7 +9,7 @@
             "type": "cppvsdbg",
             "request": "launch",
             "preLaunchTask": "build-task",
-            "program": "${workspaceFolder}/game.exe",
+            "program": "${workspaceFolder}/bin/game.exe",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${fileDirname}",

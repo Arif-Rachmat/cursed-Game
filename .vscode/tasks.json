@@ -10,7 +10,7 @@
 				"-g",
 				"${workspaceFolder}/*.c",
 				"-o",
-				"${fileDirname}\\game.exe",
+				"${workspaceFolder}\\bin\\game.exe",
 				"-lpdcurses"
 			],
 			"options": {
