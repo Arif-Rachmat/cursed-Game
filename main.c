@@ -1,23 +1,26 @@
-#include <curses.h>
-
+#include <ncurses/curses.h>
+#include "collection.h"
 
 typedef struct
 {
-    const char* title;
-    void (*function)(WINDOW*);
-}GAME;
+    const char *title;          // Selected game title/name
+    void (*function)(WINDOW *); // Function of the selected game in the list
 
-void init(int, char**);
-void displayMenu(int);
+} GAME;
 
-GAME game[] ={
-};
-static int game_amount;
+void init(int, char **); // initialized main curses window
+void displayMenu(int);   // display main menu with all available item whenever the screen need to refresh
 
-int main(int args, char *argv[]){
-    int key,selection=0;
+GAME game[] = {
+    {"Snake", Snake}}; // list available game titles and function name
+
+static int game_amount; // number of game in the list
+
+int main(int args, char *argv[])
+{
+    int selection = 0;
     bool running = true;
-    game_amount = sizeof(game)/sizeof(GAME);
+    game_amount = sizeof(game) / sizeof(GAME);
 
     init(args, argv);
     curs_set(0);
@@ -25,35 +28,42 @@ int main(int args, char *argv[]){
     keypad(stdscr, TRUE);
     raw();
     displayMenu(selection);
-    
-    while(running){
-        key = getch();
-        switch(key){
-            case KEY_UP:
-                if(--selection<0) selection = game_amount-1;
-                displayMenu(selection);
-                break;
-            case KEY_DOWN:
-                if(++selection>=game_amount) selection = 0;
-                displayMenu(selection);
-                break;
-            case KEY_RESIZE:
-                erase();
-                resize_term(0,0);
-                if(LINES<20 || COLS<70)
-                    printw("WARNING : Terminal Size Must Be 70x20 minimum");
-                else
-                    displayMenu(selection);
-                break;
-            case 13:
-            case 10:
-            case KEY_ENTER:
-                game[selection].function(stdscr);
-                break;
-            case 'q':
-            case 'Q':
-                running = false;
-                break;
+
+    while (running)
+    {
+        switch (getch())
+        {
+        case KEY_UP:
+            if (--selection < 0)
+                selection = game_amount - 1;
+            displayMenu(selection);
+            break;
+
+        case KEY_DOWN:
+            if (++selection >= game_amount)
+                selection = 0;
+            displayMenu(selection);
+            break;
+
+        case 13:
+        case 10:
+        case KEY_ENTER:
+            clear();
+            game[selection].function(stdscr);
+            displayMenu(selection);
+            break;
+
+        case KEY_RESIZE:
+            erase();
+            resize_term(0, 0);
+            displayMenu(selection);
+            break;
+
+        case 'q':
+        case 'Q':
+        case 27:
+            running = false;
+            break;
         }
     }
 
@@ -61,32 +71,39 @@ int main(int args, char *argv[]){
     return 0;
 }
 
-
-void init(int argc, char** argv){
+void init(int argc, char **argv)
+{
 #ifdef XCURSES
     Xinit(argc, argv);
 #else
     initscr();
 #endif
 #ifdef A_COLOR
-    if(has_colors()) start_color();
+    if (has_colors())
+        start_color();
 #endif
 }
 
+void displayMenu(int menum)
+{
+    if (LINES < 20 || COLS < 70)
+        printw("WARNING : Terminal Size Must Be 70x20 minimum");
+    else
+    {
+        WINDOW *win;
+        win = newwin(20, 70, (LINES - 20) / 2, (COLS - 70) / 2);
 
-void displayMenu(int menum){
-    WINDOW* win;
-    win = newwin(20,70,(LINES-20)/2, (COLS-70)/2);
-    
-    wborder(win,186,186,205,205,201,187,200,188);
-    mvwaddstr(win,0,(70-32)/2," CONSOLAS SUPER GAME COLLECTION ");
-    for(int i=0; i<game_amount; i++){
-        mvwaddstr(win, 5+i, 3, game[i].title);
+        box(win, 0, 0);
+        mvwaddstr(win, 0, (70 - 32) / 2, " CONSOLAS SUPER GAME COLLECTION ");
+        for (int i = 0; i < game_amount; i++)
+        {
+            mvwaddstr(win, 5 + i, 3, game[i].title);
+        }
+        wattron(win, A_REVERSE);
+        mvwaddstr(win, 5 + menum, 3, game[menum].title);
+        wattron(win, A_NORMAL);
+
+        refresh();
+        wrefresh(win);
     }
-    wattron(win,A_REVERSE);
-    mvwaddstr(win,5+menum,3,game[menum].title);
-    wattron(win,A_NORMAL);
-
-    refresh();
-    wrefresh(win);
 }
