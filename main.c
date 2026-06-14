@@ -12,7 +12,9 @@ void init(int, char **); // initialized main curses window
 void displayMenu(int);   // display main menu with all available item whenever the screen need to refresh
 
 GAME game[] = {
-    {"Snake", Snake}}; // list available game titles and function name
+    {"Snake", Snake},
+    {"Tetris", Tetris}
+}; // list available game titles and function name
 
 static int game_amount; // number of game in the list
 

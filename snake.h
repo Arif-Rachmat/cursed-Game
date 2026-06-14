@@ -16,6 +16,3 @@ typedef enum {
 } Direction;
 
 void Snake(WINDOW *);
-void draw(WINDOW *);
-void processGame(WINDOW *);
-void spawnFood();
